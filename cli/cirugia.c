@@ -11,7 +11,7 @@
  *   copyright notice, this list of conditions and the following disclaimer
  *   in the documentation and/or other materials provided with the
  *   distribution.
- * * Neither the name of the  nor the names of its
+ * * Neither the name of the program nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software without specific prior written permission.
  * 
@@ -43,161 +43,154 @@ extern int version;
 int cir_cli_header_parse() {
 	// Check the ROM header information
 	
-	if (cir_header_validate()) {
-		
-		// Check header version
-		version = cir_header_get_version();
-		
-		if (version == 2) {
-			fprintf(stdout, "Header Type: NES 2.0\n");
-		}
-		else {
-			fprintf(stdout, "Header Type: iNES\n");
-		}
-		
-		// Get the mapper number
-		int mappernum = cir_header_get_mapper();
-		fprintf(stdout, "Mapper: %d (0x%.2x)\n", mappernum, mappernum);
-		
-		// Get the submapper number (NES 2.0)
-		if (version == 2) {
-			fprintf(stdout, "Submapper: %d (0x%.2x)\n", cir_header_get_submapper(), cir_header_get_submapper());
-		}
-		
-		// Get the PRG ROM size
-		fprintf(stdout, "PRG ROM size in bytes: %d\n", cir_header_get_prgrom() * 16384);
-		//fprintf(stdout, "PRG ROM size in kbytes: %d\n", cir_header_get_prgrom() * 16);
-		
-		// Check if PRG RAM or battery is present
-		if (cir_header_get_prgram_present()) {
-			fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_header_get_prgram());
-			//fprintf(stdout, "PRG RAM size in kbytes: %.2f\n", cir_header_get_prgram() / 1024.0);
-			
-			if (version == 2) {
-				fprintf(stdout, "PRG NVRAM size in bytes: %d\n", cir_header_get_prgnvram());
-			}
-		}
-		
-		// Check the CHR ROM size or detect CHR RAM
-		if (cir_header_get_chrrom()) {
-			fprintf(stdout, "CHR ROM size in bytes: %d\n", cir_header_get_chrrom() * 8192);
-			//fprintf(stdout, "CHR ROM size in kbytes: %d\n", cir_header_get_chrrom() * 8);
-		}
-		else {
-			if (version == 2) {
-				fprintf(stdout, "CHR RAM size in bytes: %d\n", cir_header_get_chrram());
-				fprintf(stdout, "CHR NVRAM size in bytes: %d\n", cir_header_get_chrnvram());
-			}
-			else { fprintf(stdout, "CHR RAM: Present\n"); }
-		}
-		
-		// Check the mirroring
-		int mirroring = cir_header_get_mirroring();
-		
-		if (mirroring == 2) {
-			fprintf(stdout, "Mirroring: Four screen\n");
-		}
-		else if (mirroring == 1) {
-			fprintf(stdout, "Mirroring: Vertical\n");
-		}
-		else {
-			fprintf(stdout, "Mirroring: Horizontal\n");
-		}
-		
-		// Check if there's a trainer
-		fprintf(stdout, "512-byte trainer: %s\n", cir_header_get_trainer() ? "Present" : "None");
-		
-		int system = cir_header_get_system();
-		if (system == 2) { // PC-10
-			fprintf(stdout, "System: PlayChoice-10\n");
-		}
-		else if (system == 1) { // VS. System
-			fprintf(stdout, "System: VS. System\n");
-			
-			// Detect VS. System hardware if it's NES 2.0
-			if (version == 2) {
-				// Check the VS. System's PPU hardware
-				int vsppu = cir_header_get_vsppu();
-				
-				if (vsppu == 0) {
-					fprintf(stdout, "VS. System PPU: RP2C03B\n");
-				}
-				else if (vsppu == 1) {
-					fprintf(stdout, "VS. System PPU: RP2C03G\n");
-				}
-				else if (vsppu == 2) {
-					fprintf(stdout, "VS. System PPU: RP2C04-0001\n");
-				}
-				else if (vsppu == 3) {
-					fprintf(stdout, "VS. System PPU: RP2C04-0002\n");
-				}
-				else if (vsppu == 4) {
-					fprintf(stdout, "VS. System PPU: RP2C04-0003\n");
-				}
-				else if (vsppu == 5) {
-					fprintf(stdout, "VS. System PPU: RP2C04-0004\n");
-				}
-				else if (vsppu == 6) {
-					fprintf(stdout, "VS. System PPU: RC2C03B\n");
-				}
-				else if (vsppu == 7) {
-					fprintf(stdout, "VS. System PPU: RC2C03C\n");
-				}
-				else if (vsppu == 8) {
-					fprintf(stdout, "VS. System PPU: RC2C05-01\n");
-				}
-				else if (vsppu == 9) {
-					fprintf(stdout, "VS. System PPU: RC2C05-02\n");
-				}
-				else if (vsppu == 10) {
-					fprintf(stdout, "VS. System PPU: RC2C05-03\n");
-				}
-				else if (vsppu == 11) {
-					fprintf(stdout, "VS. System PPU: RC2C05-04\n");
-				}
-				else if (vsppu == 12) {
-					fprintf(stdout, "VS. System PPU: RC2C05-05\n");
-				}
-				
-				// Check the VS. System's PPU Mode
-				int vsmode = cir_header_get_vsmode();
-				
-				if (vsmode == 0) {
-					fprintf(stdout, "VS. System Mode: Standard\n");
-				}
-				else if (vsmode == 1) {
-					fprintf(stdout, "VS. System Mode: RBI Baseball\n");
-				}
-				else if (vsmode == 2) {
-					fprintf(stdout, "VS. System Mode: TKO Boxing\n");
-				}
-				else if (vsmode == 3) {
-					fprintf(stdout, "VS. System Mode: Super Xevious\n");
-				}
-			}
-		}
-		else { // Home Console
-			fprintf(stdout, "System: Home Console\n");
-		}
-		
-		// TV System
-		int tvsystem = cir_header_get_tvsystem();
-		if (tvsystem == 0) {
-			fprintf(stdout, "TV System: NTSC\n");
-		}
-		else if (tvsystem == 1) {
-			fprintf(stdout, "TV System: PAL\n");
-		}
-		else if (tvsystem == 2) {
-			fprintf(stdout, "TV System: NTSC/PAL\n");
-		}
-		
-		return 1;
+	// Check header version
+	version = cir_header_get_version();
+	
+	if (version == 2) {
+		fprintf(stdout, "Header Type: NES 2.0\n");
 	}
 	else {
-		fprintf(stdout, "No Header or Invalid ROM\n");
-		return 0;
+		fprintf(stdout, "Header Type: iNES\n");
 	}
+	
+	// Get the mapper number
+	int mappernum = cir_header_get_mapper();
+	fprintf(stdout, "Mapper: %d (0x%.2x)\n", mappernum, mappernum);
+	
+	// Get the submapper number (NES 2.0)
+	if (version == 2) {
+		fprintf(stdout, "Submapper: %d (0x%.2x)\n", cir_header_get_submapper(), cir_header_get_submapper());
+	}
+	
+	// Get the PRG ROM size
+	fprintf(stdout, "PRG ROM size in bytes: %d\n", cir_header_get_prgrom() * 16384);
+	//fprintf(stdout, "PRG ROM size in kbytes: %d\n", cir_header_get_prgrom() * 16);
+	
+	// Check if PRG RAM or battery is present
+	if (cir_header_get_prgram_present()) {
+		fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_header_get_prgram());
+		//fprintf(stdout, "PRG RAM size in kbytes: %.2f\n", cir_header_get_prgram() / 1024.0);
+		
+		if (version == 2) {
+			fprintf(stdout, "PRG NVRAM size in bytes: %d\n", cir_header_get_prgnvram());
+		}
+	}
+	
+	// Check the CHR ROM size or detect CHR RAM
+	if (cir_header_get_chrrom()) {
+		fprintf(stdout, "CHR ROM size in bytes: %d\n", cir_header_get_chrrom() * 8192);
+		//fprintf(stdout, "CHR ROM size in kbytes: %d\n", cir_header_get_chrrom() * 8);
+	}
+	else {
+		if (version == 2) {
+			fprintf(stdout, "CHR RAM size in bytes: %d\n", cir_header_get_chrram());
+			fprintf(stdout, "CHR NVRAM size in bytes: %d\n", cir_header_get_chrnvram());
+		}
+		else { fprintf(stdout, "CHR RAM: Present\n"); }
+	}
+	
+	// Check the mirroring
+	int mirroring = cir_header_get_mirroring();
+	
+	if (mirroring == 2) {
+		fprintf(stdout, "Mirroring: Four screen\n");
+	}
+	else if (mirroring == 1) {
+		fprintf(stdout, "Mirroring: Vertical\n");
+	}
+	else {
+		fprintf(stdout, "Mirroring: Horizontal\n");
+	}
+	
+	// Check if there's a trainer
+	fprintf(stdout, "512-byte trainer: %s\n", cir_header_get_trainer() ? "Present" : "None");
+	
+	int system = cir_header_get_system();
+	if (system == 2) { // PC-10
+		fprintf(stdout, "System: PlayChoice-10\n");
+	}
+	else if (system == 1) { // VS. System
+		fprintf(stdout, "System: VS. System\n");
+		
+		// Detect VS. System hardware if it's NES 2.0
+		if (version == 2) {
+			// Check the VS. System's PPU hardware
+			int vsppu = cir_header_get_vsppu();
+			
+			if (vsppu == 0) {
+				fprintf(stdout, "VS. System PPU: RP2C03B\n");
+			}
+			else if (vsppu == 1) {
+				fprintf(stdout, "VS. System PPU: RP2C03G\n");
+			}
+			else if (vsppu == 2) {
+				fprintf(stdout, "VS. System PPU: RP2C04-0001\n");
+			}
+			else if (vsppu == 3) {
+				fprintf(stdout, "VS. System PPU: RP2C04-0002\n");
+			}
+			else if (vsppu == 4) {
+				fprintf(stdout, "VS. System PPU: RP2C04-0003\n");
+			}
+			else if (vsppu == 5) {
+				fprintf(stdout, "VS. System PPU: RP2C04-0004\n");
+			}
+			else if (vsppu == 6) {
+				fprintf(stdout, "VS. System PPU: RC2C03B\n");
+			}
+			else if (vsppu == 7) {
+				fprintf(stdout, "VS. System PPU: RC2C03C\n");
+			}
+			else if (vsppu == 8) {
+				fprintf(stdout, "VS. System PPU: RC2C05-01\n");
+			}
+			else if (vsppu == 9) {
+				fprintf(stdout, "VS. System PPU: RC2C05-02\n");
+			}
+			else if (vsppu == 10) {
+				fprintf(stdout, "VS. System PPU: RC2C05-03\n");
+			}
+			else if (vsppu == 11) {
+				fprintf(stdout, "VS. System PPU: RC2C05-04\n");
+			}
+			else if (vsppu == 12) {
+				fprintf(stdout, "VS. System PPU: RC2C05-05\n");
+			}
+			
+			// Check the VS. System's PPU Mode
+			int vsmode = cir_header_get_vsmode();
+			
+			if (vsmode == 0) {
+				fprintf(stdout, "VS. System Mode: Standard\n");
+			}
+			else if (vsmode == 1) {
+				fprintf(stdout, "VS. System Mode: RBI Baseball\n");
+			}
+			else if (vsmode == 2) {
+				fprintf(stdout, "VS. System Mode: TKO Boxing\n");
+			}
+			else if (vsmode == 3) {
+				fprintf(stdout, "VS. System Mode: Super Xevious\n");
+			}
+		}
+	}
+	else { // Home Console
+		fprintf(stdout, "System: Home Console\n");
+	}
+	
+	// TV System
+	int tvsystem = cir_header_get_tvsystem();
+	if (tvsystem == 0) {
+		fprintf(stdout, "TV System: NTSC\n");
+	}
+	else if (tvsystem == 1) {
+		fprintf(stdout, "TV System: PAL\n");
+	}
+	else if (tvsystem == 2) {
+		fprintf(stdout, "TV System: NTSC/PAL\n");
+	}
+	
+	return 1;
 }
 
 void cir_cli_show_usage() {
@@ -244,26 +237,27 @@ int main(int argc, char* argv[]) {
 	
 	if (result) {
 		// Get the CRC32 checksum
-		fprintf(stdout, "CRC: %X\n", cir_rom_get_crc());
+		fprintf(stdout, "CRC:  %X\n", cir_rom_get_crc());
+		fprintf(stdout, "SHA1: %s\n", cir_rom_get_sha1());
 		
 		// Parse CLI options
 		int c;
 		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:q:r:s:t:v:")) != -1)
 			switch (c) {
 				case 'b': // Set the PRG ROM size (0 - 4095)
-					if (atoi(optarg) >= 0 && atoi(optarg) < 4096) {
+					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
 						cir_header_set_prgrom(atoi(optarg));
 					}
 					else {
-						fprintf(stderr, "ERROR: -b must be 0 to 4096: skipping\n");
+						fprintf(stderr, "ERROR: -b must be 0 to 4095: skipping\n");
 					}
 					break;
 				case 'c': // Set the CHR ROM size (0 - 4095)
-					if (atoi(optarg) >= 0 && atoi(optarg) < 4096) {
+					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
 						cir_header_set_chrrom(atoi(optarg));
 					}
 					else {
-						fprintf(stderr, "ERROR: -c must be 0 to 4096: skipping\n");
+						fprintf(stderr, "ERROR: -c must be 0 to 4095: skipping\n");
 					}
 					break;
 				case 'd': // Set the CHR RAM size (0 - 14)
@@ -392,6 +386,9 @@ int main(int argc, char* argv[]) {
 		
 		// Spit out the new information
 		cir_cli_header_parse();
+	}
+	else {
+		fprintf(stdout, "No Header or Invalid ROM\n");
 	}
 	
 	// Exit

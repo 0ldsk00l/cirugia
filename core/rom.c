@@ -11,7 +11,7 @@
  *   copyright notice, this list of conditions and the following disclaimer
  *   in the documentation and/or other materials provided with the
  *   distribution.
- * * Neither the name of the  nor the names of its
+ * * Neither the name of the program nor the names of its
  *   contributors may be used to endorse or promote products derived from
  *   this software without specific prior written permission.
  * 
@@ -113,6 +113,11 @@ uint32_t cir_rom_get_crc() {
 	uint32_t crc = 0;
 	crc = crc32(crc, rom_nh, nhsize);
 	return crc;
+}
+
+const char* cir_rom_get_sha1() {
+	// Get the SHA1 checksum of the ROM minus the header
+	return sha1(rom_nh, nhsize);
 }
 
 void cir_rom_split_header_rom() {
