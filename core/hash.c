@@ -147,7 +147,6 @@ const char* sha1(const void *buf, size_t size) {
 	
 	sha1_init(&context);
 	sha1_update(&context, buf, size);
-	
 	sha1_final(&context, digest);
 	
 	char strbuf[SHA1_DIGEST_SIZE * 2 + 1];

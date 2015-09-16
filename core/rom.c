@@ -42,7 +42,7 @@ uint8_t *romheader = NULL;	// The NES ROM Header
 uint8_t *rom_nh = NULL;		// NES ROM file without header
 int32_t nhsize = 0;
 
-void cir_rom_load(const char *filepath) {
+int cir_rom_load(const char *filepath) {
 	// Load a ROM
 	
 	FILE *file;
@@ -51,29 +51,24 @@ void cir_rom_load(const char *filepath) {
 	
 	file = fopen(filepath, "rb");
 	
-	if (!file) {
-		fprintf(stderr, "FAIL: Unable to open %s\n", filepath);
-		exit(2);
-	}
+	if (!file) { return 0; }
 	
 	fseek(file, 0, SEEK_END);
 	filesize = ftell(file);
 	fseek(file, 0, SEEK_SET);
 
 	nhsize = filesize - HEADERSIZE; // Size of the ROM without the header
-
-	//fprintf(stdout, "File size in bytes: %ld\n", filesize);
 	
 	rom = malloc(filesize * sizeof(uint8_t));
 	
-	if (rom == NULL) { fprintf(stderr, "FAIL: Memory error"); }
+	if (rom == NULL) { return 0; }
 	
 	result = fread(rom, sizeof(uint8_t), filesize, file);
-	if (result != filesize) { fprintf(stderr, "FAIL: File read error\n"); }
+	if (result != filesize) { return 0; }
 	
 	fclose(file);
 	
-	return;
+	return 1;
 }
 
 int cir_rom_write(const char *filepath) {
@@ -85,10 +80,7 @@ int cir_rom_write(const char *filepath) {
 	// Open the file for writing
 	file = fopen(filepath, "wb");
 	
-	if (!file) {
-		fprintf(stderr, "FAIL: Unable to write %s\n", filepath);
-		return 0;
-	}
+	if (!file) { return 0; }
 	
 	// Stitch the pieces together
 	outfile = malloc((nhsize + HEADERSIZE) * sizeof(uint8_t));
@@ -117,7 +109,12 @@ uint32_t cir_rom_get_crc() {
 
 const char* cir_rom_get_sha1() {
 	// Get the SHA1 checksum of the ROM minus the header
-	return sha1(rom_nh, nhsize);
+	uint8_t *temprom = NULL;
+	temprom = malloc(nhsize * sizeof(uint8_t));
+	for (int i = 0; i < nhsize; i++) { temprom[i] = rom_nh[i]; }
+	const char *retval = sha1(temprom, nhsize);
+	free(temprom);
+	return retval;
 }
 
 void cir_rom_split_header_rom() {

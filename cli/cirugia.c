@@ -43,9 +43,6 @@ extern int version;
 int cir_cli_header_parse() {
 	// Check the ROM header information
 	
-	// Check header version
-	version = cir_header_get_version();
-	
 	if (version == 2) {
 		fprintf(stdout, "Header Type: NES 2.0\n");
 	}
@@ -220,29 +217,34 @@ void cir_cli_show_usage() {
 int main(int argc, char* argv[]) {
 	// The main function
 	
+	int writefile = 0;
+	char outfilepath[256];
+	
 	if (argv[1] == NULL) {
 		cir_cli_show_usage();
 		exit(0);
 	}
 	
 	// Load the ROM
-	cir_rom_load(argv[argc -1]);
+	if (!cir_rom_load(argv[argc -1])) {
+		fprintf(stderr, "FAIL: Unable to open %s\n", argv[argc -1]);
+		exit(2);
+	}
 	
 	// Split the header and the ROM
 	cir_rom_split_header_rom();
 	
-	// Validate the ROM header
-	int result = 0;
-	result = cir_header_validate();
-	
-	if (result) {
+	if (cir_header_validate()) {
+		// Check header version
+		version = cir_header_get_version();
+		
 		// Get the CRC32 checksum
 		fprintf(stdout, "CRC:  %X\n", cir_rom_get_crc());
 		fprintf(stdout, "SHA1: %s\n", cir_rom_get_sha1());
 		
 		// Parse CLI options
 		int c;
-		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:q:r:s:t:v:")) != -1)
+		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:q:r:s:t:v:")) != -1) {
 			switch (c) {
 				case 'b': // Set the PRG ROM size (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
@@ -334,7 +336,8 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'o': // Write a new file
 					if (optarg) {
-						cir_rom_write(optarg);
+						writefile = 1;
+						snprintf(outfilepath, sizeof(outfilepath), "%s", optarg);
 					}
 					else {
 						fprintf(stderr, "ERROR: -o must specify filename\n");
@@ -383,6 +386,14 @@ int main(int argc, char* argv[]) {
 				default:
 					break;
 			}
+		}
+		
+		// Write a file if it was specified
+		if (writefile) {
+			if (!cir_rom_write(outfilepath)) {
+				fprintf(stderr, "FAIL: Unable to write %s\n", outfilepath);
+			}
+		}
 		
 		// Spit out the new information
 		cir_cli_header_parse();
