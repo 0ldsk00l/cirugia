@@ -41,7 +41,8 @@
 uint8_t *rom = NULL;		// NES ROM file
 uint8_t *romheader = NULL;	// The NES ROM Header
 uint8_t *rom_nh = NULL;		// NES ROM file without header
-int32_t nhsize = 0;
+int32_t romsize = 0;		// Size of the ROM with header
+int32_t nhsize = 0;			// Size of the ROM without header
 
 int cir_rom_load(const char *filepath) {
 	// Load a ROM
@@ -57,7 +58,8 @@ int cir_rom_load(const char *filepath) {
 	fseek(file, 0, SEEK_END);
 	filesize = ftell(file);
 	fseek(file, 0, SEEK_SET);
-
+	
+	romsize = filesize;
 	nhsize = filesize - HEADERSIZE; // Size of the ROM without the header
 	
 	rom = malloc(filesize * sizeof(uint8_t));
@@ -72,7 +74,7 @@ int cir_rom_load(const char *filepath) {
 	return 1;
 }
 
-int cir_rom_write(const char *filepath, int patch) {
+int cir_rom_write(const char *filepath) {
 	// Write a ROM
 	
 	FILE *file;
@@ -86,13 +88,8 @@ int cir_rom_write(const char *filepath, int patch) {
 	// Stitch the pieces together
 	outfile = malloc((nhsize + HEADERSIZE) * sizeof(uint8_t));
 	
-	if (patch) {
-		for (int i = 0; i < nhsize + HEADERSIZE; i++) { outfile[i] = rom[i]; }
-	}
-	else {
-		for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = romheader[i]; }
-		for (int j = 0; j < nhsize; j++) { outfile[j + HEADERSIZE] = rom_nh[j]; }
-	}
+	for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = romheader[i]; }
+	for (int j = 0; j < nhsize; j++) { outfile[j + HEADERSIZE] = rom_nh[j]; }
 	
 	// Write the file
 	fwrite(outfile, sizeof(uint8_t), HEADERSIZE + nhsize, file);

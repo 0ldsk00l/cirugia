@@ -5,7 +5,8 @@
 #define IPS_RECORD_SIZE 5
 
 int cir_ips_load(const char *filepath);
+int cir_ips_rom_write(const char *filepath);
 int cir_ips_validate();
-int cir_ips_apply();
+int cir_ips_parse(int apply);
 
 #endif

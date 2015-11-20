@@ -401,19 +401,21 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		
-		// Patch the file if it was specified
+		// Patch the file and write if it was specified
 		if (patchfile) {
 			if (!cir_ips_load(patchfilepath)) {
 				fprintf(stderr, "FAIL: Unable to open %s\n", patchfilepath);
 			}
 			else {
-				cir_ips_apply();
+				// Parse (don't apply) the IPS patch to find out stats
+				cir_ips_parse(0);
+				// Write the file if it was specified
+				if (writefile) { cir_ips_rom_write(outfilepath); }
 			}
 		}
-		
-		// Write a file if it was specified
-		if (writefile) {
-			if (!cir_rom_write(outfilepath, patchfile ? 1 : 0)) {
+		// Otherwise just write a file if it was specified
+		else if (writefile) {
+			if (!cir_rom_write(outfilepath)) {
 				fprintf(stderr, "FAIL: Unable to write %s\n", outfilepath);
 			}
 		}
@@ -421,9 +423,7 @@ int main(int argc, char* argv[]) {
 		// Spit out the new information
 		cir_cli_header_parse();
 	}
-	else {
-		fprintf(stdout, "No Header or Invalid ROM\n");
-	}
+	else { fprintf(stdout, "FAIL: No Header or Invalid ROM\n"); }
 	
 	// Exit
 	cir_rom_cleanup();

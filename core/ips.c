@@ -36,11 +36,14 @@
 #include "ips.h"
 
 uint8_t *ipspatch = NULL;
+uint8_t *rom_patched = NULL;
+int32_t patchedsize = 0;
 
 extern uint8_t *rom;
+extern int32_t romsize;
 
 int cir_ips_load(const char *filepath) {
-	// Load a ROM
+	// Load an IPS patch
 	
 	FILE *file;
 	long filesize; // File size in bytes
@@ -66,6 +69,37 @@ int cir_ips_load(const char *filepath) {
 	return 1;
 }
 
+int cir_ips_rom_write(const char *filepath) {
+	// Write a patched ROM - IPS must be parsed before calling this
+	
+	FILE *file;
+	
+	// Allocate memory for the patched rom
+	rom_patched = malloc((patchedsize) * sizeof(uint8_t));
+	for (int i = 0; i < romsize; i++) {
+		rom_patched[i] = rom[i];
+	}
+	
+	// Parse and apply changes
+	cir_ips_parse(1);
+	
+	// Open the file for writing
+	file = fopen(filepath, "wb");
+	
+	if (!file) { return 0; }
+	
+	// Write the file
+	fwrite(rom_patched, sizeof(uint8_t), patchedsize, file);
+	
+	// Close the file
+	fclose(file);
+	
+	// Free the malloc
+	free(rom_patched);
+	
+	return 1;
+}
+
 int cir_ips_validate() {
 	// Check for a valid IPS header
 	
@@ -78,8 +112,8 @@ int cir_ips_validate() {
 	return 0;
 }
 
-int cir_ips_apply() {
-	// Apply the IPS patch
+int cir_ips_parse(int apply) {
+	// Parse the IPS patch and apply if specified
 	
 	uint8_t record[IPS_RECORD_SIZE];
 	uint32_t filepos = 0;
@@ -90,13 +124,17 @@ int cir_ips_apply() {
 	int patchcount = 0;
 	int rle = 0;
 	
-	
 	// Check if the patch is valid
 	if (!cir_ips_validate()) {
 		/*printf("Patch is invalid\n");*/
 		return 0;
 	}
 	//else { printf("Patch is valid\n"); }
+	
+	// Patch size should be at least as big as the original ROM
+	if (romsize > patchedsize) {
+		patchedsize = romsize;
+	}
 	
 	filepos += IPS_HEADER_SIZE;
 	
@@ -106,7 +144,7 @@ int cir_ips_apply() {
 		}
 		
 		if (record[0] == 0x45 && record[1] == 0x4f && record[2] == 0x46) {
-			//printf("End of File\n");
+			//printf("EOF\n");
 			break;
 		}
 		
@@ -128,22 +166,36 @@ int cir_ips_apply() {
 			
 			rle++;
 			bytecount += rlelength;
+			
+			// Increment the length variable to the next IPS record
+			length += 3;
+			
 			//printf("Length: %x (RLE)\n\n", rlelength);
 			
-			// Do the dirty work
-			for (int i = 0; i < rlelength; i++) {
-				rom[offset + i] = ipspatch[filepos + IPS_RECORD_SIZE + 2];
+			if (offset + rlelength > patchedsize) {
+				patchedsize = offset + rlelength;
 			}
 			
-			length += 3;
+			if (apply) {
+				// Do the dirty work
+				for (int i = 0; i < rlelength; i++) {
+					rom_patched[offset + i] = ipspatch[filepos + IPS_RECORD_SIZE + 2];
+				}
+			}
 		}
 		else {
 			bytecount += length;
 			//printf("Length: %x\n\n", length);
 			
-			// Do the dirty work
-			for (int i = 0; i < length; i++) {
-				rom[offset + i] = ipspatch[filepos + IPS_RECORD_SIZE + i];
+			if (offset + length > patchedsize) {
+				patchedsize = offset + length;
+			}
+			
+			if (apply) {
+				// Do the dirty work
+				for (int i = 0; i < length; i++) {
+					rom_patched[offset + i] = ipspatch[filepos + IPS_RECORD_SIZE + i];
+				}
 			}
 		}
 		
@@ -151,6 +203,7 @@ int cir_ips_apply() {
 		patchcount++;
 	}
 	
+	//printf("Patched size: %d\n", patchedsize);
 	//printf("Bytes replaced:\t%d\n", bytecount);
 	//printf("All patches:\t%d\n", patchcount);
 	//printf("RLE patches:\t%d\n", rle);
