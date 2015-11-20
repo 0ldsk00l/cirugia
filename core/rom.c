@@ -34,6 +34,7 @@
 #include <stdint.h>
 
 #include "hash.h"
+#include "ips.h"
 #include "rom.h"
 
 // Global Variables
@@ -71,7 +72,7 @@ int cir_rom_load(const char *filepath) {
 	return 1;
 }
 
-int cir_rom_write(const char *filepath) {
+int cir_rom_write(const char *filepath, int patch) {
 	// Write a ROM
 	
 	FILE *file;
@@ -85,8 +86,13 @@ int cir_rom_write(const char *filepath) {
 	// Stitch the pieces together
 	outfile = malloc((nhsize + HEADERSIZE) * sizeof(uint8_t));
 	
-	for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = romheader[i]; }
-	for (int j = 0; j < nhsize; j++) { outfile[j + HEADERSIZE] = rom_nh[j]; }
+	if (patch) {
+		for (int i = 0; i < nhsize + HEADERSIZE; i++) { outfile[i] = rom[i]; }
+	}
+	else {
+		for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = romheader[i]; }
+		for (int j = 0; j < nhsize; j++) { outfile[j + HEADERSIZE] = rom_nh[j]; }
+	}
 	
 	// Write the file
 	fwrite(outfile, sizeof(uint8_t), HEADERSIZE + nhsize, file);

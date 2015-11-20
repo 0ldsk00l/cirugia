@@ -36,6 +36,7 @@
 
 #include "cirugia.h"
 #include "header.h"
+#include "ips.h"
 #include "rom.h"
 
 extern int version;
@@ -211,13 +212,16 @@ void cir_cli_show_usage() {
 	fprintf(stdout, "  -c        Set CHR ROM size (0-4095)\n");
 	fprintf(stdout, "  -d        Set CHR RAM size (0-14)\n");
 	fprintf(stdout, "  -e        Set CHR NVRAM size (0-14)\n");
+	fprintf(stdout, "  -p        Patch filename\n");
 	fprintf(stdout, "  -o        Output filename\n");
 }
 
 int main(int argc, char* argv[]) {
 	// The main function
 	
+	int patchfile = 0;
 	int writefile = 0;
+	char patchfilepath[256];
 	char outfilepath[256];
 	
 	if (argv[1] == NULL) {
@@ -244,7 +248,7 @@ int main(int argc, char* argv[]) {
 		
 		// Parse CLI options
 		int c;
-		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:q:r:s:t:v:")) != -1) {
+		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:p:q:r:s:t:v:")) != -1) {
 			switch (c) {
 				case 'b': // Set the PRG ROM size (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
@@ -343,6 +347,15 @@ int main(int argc, char* argv[]) {
 						fprintf(stderr, "ERROR: -o must specify filename\n");
 					}
 					break;
+				case 'p': // Apply IPS patch
+					if (optarg) {
+						patchfile = 1;
+						snprintf(patchfilepath, sizeof(patchfilepath), "%s", optarg);
+					}
+					else {
+						fprintf(stderr, "ERROR: -p must specify filename\n");
+					}
+					break;
 				case 'q': // Set System (0 - 2)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 3) {
 						cir_header_set_system(atoi(optarg));
@@ -388,9 +401,19 @@ int main(int argc, char* argv[]) {
 			}
 		}
 		
+		// Patch the file if it was specified
+		if (patchfile) {
+			if (!cir_ips_load(patchfilepath)) {
+				fprintf(stderr, "FAIL: Unable to open %s\n", patchfilepath);
+			}
+			else {
+				cir_ips_apply();
+			}
+		}
+		
 		// Write a file if it was specified
 		if (writefile) {
-			if (!cir_rom_write(outfilepath)) {
+			if (!cir_rom_write(outfilepath, patchfile ? 1 : 0)) {
 				fprintf(stderr, "FAIL: Unable to write %s\n", outfilepath);
 			}
 		}

@@ -42,7 +42,8 @@ int cir_header_validate() {
 	// Check if there is a valid header
 	
 	//0-3: Constant $4E $45 $53 $1A ("NES" followed by EOF)
-	if (romheader[0] == 0x4e && romheader[1] == 0x45 && romheader[2] == 0x53 && romheader[3] == 0x1a) {
+	if (romheader[0] == 0x4e && romheader[1] == 0x45 &&
+		romheader[2] == 0x53 && romheader[3] == 0x1a) {
 		return 1;
 	}
 	else { return 0; }

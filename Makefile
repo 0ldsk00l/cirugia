@@ -3,6 +3,7 @@ CFLAGS = -Wall -g -Icore
 
 OBJS = core/hash.o
 OBJS += core/header.o
+OBJS += core/ips.o
 OBJS += core/rom.o
 
 OBJS += cli/cirugia.o
