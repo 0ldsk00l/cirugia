@@ -37,10 +37,14 @@
 
 uint8_t *ipspatch = NULL;
 uint8_t *rom_patched = NULL;
+uint8_t *ipsout = NULL;
 int32_t patchedsize = 0;
+int ipslength = 0;
 
 extern uint8_t *rom;
+extern uint8_t *diffrom;
 extern int32_t romsize;
+extern int32_t diffsize;
 
 int cir_ips_load(const char *filepath) {
 	// Load an IPS patch
@@ -65,6 +69,28 @@ int cir_ips_load(const char *filepath) {
 	if (result != filesize) { return 0; }
 	
 	fclose(file);
+	
+	return 1;
+}
+
+int cir_ips_write(const char *filepath) {
+	// Write the IPS data to a file
+	
+	FILE *file;
+	
+	// Open the file for writing
+	file = fopen(filepath, "wb");
+	
+	if (!file) { return 0; }
+	
+	// Write the file
+	fwrite(ipsout, sizeof(uint8_t), ipslength, file);
+	
+	// Close the file
+	fclose(file);
+	
+	// Free the malloc
+	free(ipsout);
 	
 	return 1;
 }
@@ -126,10 +152,8 @@ int cir_ips_parse(int apply) {
 	
 	// Check if the patch is valid
 	if (!cir_ips_validate()) {
-		/*printf("Patch is invalid\n");*/
 		return 0;
 	}
-	//else { printf("Patch is valid\n"); }
 	
 	// Patch size should be at least as big as the original ROM
 	if (romsize > patchedsize) {
@@ -143,8 +167,8 @@ int cir_ips_parse(int apply) {
 			record[i] = ipspatch[i + filepos];
 		}
 		
+		// Check for EOF
 		if (record[0] == 0x45 && record[1] == 0x4f && record[2] == 0x46) {
-			//printf("EOF\n");
 			break;
 		}
 		
@@ -156,9 +180,8 @@ int cir_ips_parse(int apply) {
 		length = 0;
 		length += (record[3] << 8);
 		length += record[4];
-
-		//printf("Offset: %x\n", offset);
 		
+		// If the length field is 0 it's RLE
 		if (length == 0) {
 			rlelength = 0;
 			rlelength += (ipspatch[filepos + IPS_RECORD_SIZE] << 8);
@@ -169,8 +192,6 @@ int cir_ips_parse(int apply) {
 			
 			// Increment the length variable to the next IPS record
 			length += 3;
-			
-			//printf("Length: %x (RLE)\n\n", rlelength);
 			
 			if (offset + rlelength > patchedsize) {
 				patchedsize = offset + rlelength;
@@ -185,7 +206,6 @@ int cir_ips_parse(int apply) {
 		}
 		else {
 			bytecount += length;
-			//printf("Length: %x\n\n", length);
 			
 			if (offset + length > patchedsize) {
 				patchedsize = offset + length;
@@ -209,4 +229,70 @@ int cir_ips_parse(int apply) {
 	//printf("RLE patches:\t%d\n", rle);
 	
 	return 1;
+}
+
+void cir_ips_diff() {
+	// Compare two ROMs and output differences in IPS format
+	
+	int size = 0;
+	int offset = 0;
+	int datalength = 0;
+	
+	ipslength = IPS_RECORD_SIZE;
+	size = diffsize > romsize ? diffsize : romsize;
+	
+	// Allocate memory to contain the IPS output
+	ipsout = malloc(ipslength * sizeof(uint8_t));
+	
+	// Write the IPS header
+	ipsout[0] = 0x50; ipsout[1] = 0x41;	ipsout[2] = 0x54;
+	ipsout[3] = 0x43; ipsout[4] = 0x48;
+	
+	for (int i = 0; i < size; i++) {
+		if (diffrom[i] != rom[i]) {
+			offset = i;
+			
+			// How long is it different for?
+			while (diffrom[i + datalength] != rom[i + datalength]) {
+				datalength++;
+			}
+			
+			// Avoid writing an EOF if the offset looks like EOF
+			if (i == 0x454f46) {
+				datalength++;
+				offset--;
+			}
+			
+			// Make the IPS file big enough to fit the next record
+			ipsout = realloc(ipsout, (ipslength + IPS_HEADER_SIZE + datalength) * sizeof(uint8_t));
+			
+			// Insert the offset to start the record
+			ipsout[ipslength] = offset >> 16;
+			ipsout[ipslength + 1] = offset >> 8;
+			ipsout[ipslength + 2] = offset;
+			
+			// Insert the length after the offset
+			ipsout[ipslength + 3] = datalength >> 8;
+			ipsout[ipslength + 4] = datalength;
+			
+			// Insert the data after the length
+			for (int j = 0; j < datalength; j++) {
+				ipsout[ipslength + IPS_RECORD_SIZE + j] = diffrom[i + j];
+			}
+			
+			// Update the IPS length variable and reset datalength
+			ipslength += IPS_HEADER_SIZE + datalength;
+			i += datalength;
+			datalength = 0;
+		}
+	}
+	
+	// Add the EOF to the end of the file
+	ipsout = realloc(ipsout, (ipslength + 3) * sizeof(uint8_t));
+	
+	ipsout[ipslength] = 0x45;
+	ipsout[ipslength + 1] = 0x4f;
+	ipsout[ipslength + 2] = 0x46;
+	
+	ipslength += IPS_OFFSET_SIZE;
 }

@@ -212,8 +212,10 @@ void cir_cli_show_usage() {
 	fprintf(stdout, "  -c        Set CHR ROM size (0-4095)\n");
 	fprintf(stdout, "  -d        Set CHR RAM size (0-14)\n");
 	fprintf(stdout, "  -e        Set CHR NVRAM size (0-14)\n");
-	fprintf(stdout, "  -p        Patch filename\n");
-	fprintf(stdout, "  -o        Output filename\n");
+	fprintf(stdout, "  -a        Apply IPS Patch (filename)\n");
+	fprintf(stdout, "  -p        IPS Output File (filename)\n");
+	fprintf(stdout, "  -x        Diff ROM (filename)\n");
+	fprintf(stdout, "  -o        Output File (filename)\n");
 }
 
 int main(int argc, char* argv[]) {
@@ -221,8 +223,12 @@ int main(int argc, char* argv[]) {
 	
 	int patchfile = 0;
 	int writefile = 0;
+	int patchout = 0;
+	int diff = 0;
 	char patchfilepath[256];
 	char outfilepath[256];
+	char patchoutpath[256];
+	char diffpath[256];
 	
 	if (argv[1] == NULL) {
 		cir_cli_show_usage();
@@ -242,14 +248,23 @@ int main(int argc, char* argv[]) {
 		// Check header version
 		version = cir_header_get_version();
 		
-		// Get the CRC32 checksum
+		// Get the CRC32 and SHA1 checksums
 		fprintf(stdout, "CRC:  %X\n", cir_rom_get_crc());
 		fprintf(stdout, "SHA1: %s\n", cir_rom_get_sha1());
 		
 		// Parse CLI options
 		int c;
-		while ((c = getopt(argc, argv, "b:c:d:e:f:g:i:j:k:l:m:o:p:q:r:s:t:v:")) != -1) {
+		while ((c = getopt(argc, argv, "a:b:c:d:e:f:g:i:j:k:l:m:o:p:q:r:s:t:v:x:")) != -1) {
 			switch (c) {
+				case 'a': // Apply IPS patch
+					if (optarg) {
+						patchfile = 1;
+						snprintf(patchfilepath, sizeof(patchfilepath), "%s", optarg);
+					}
+					else {
+						fprintf(stderr, "ERROR: -a must specify filename\n");
+					}
+					break;
 				case 'b': // Set the PRG ROM size (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
 						cir_header_set_prgrom(atoi(optarg));
@@ -347,10 +362,10 @@ int main(int argc, char* argv[]) {
 						fprintf(stderr, "ERROR: -o must specify filename\n");
 					}
 					break;
-				case 'p': // Apply IPS patch
+				case 'p': // IPS patch output file path
 					if (optarg) {
-						patchfile = 1;
-						snprintf(patchfilepath, sizeof(patchfilepath), "%s", optarg);
+						patchout = 1;
+						snprintf(patchoutpath, sizeof(patchoutpath), "%s", optarg);
 					}
 					else {
 						fprintf(stderr, "ERROR: -p must specify filename\n");
@@ -396,8 +411,41 @@ int main(int argc, char* argv[]) {
 						fprintf(stderr, "ERROR: -v must be 1 or 2: skipping\n");
 					}
 					break;
+				case 'x': // Diff ROM (filename)
+					if (optarg) {
+						diff = 1;
+						snprintf(diffpath, sizeof(diffpath), "%s", optarg);
+					}
+					else {
+						fprintf(stderr, "ERROR: -x must specify filename\n");
+					}
+					break;
 				default:
 					break;
+			}
+		}
+		
+		// If there is a ROM to diff against, load it
+		if (diff) {
+			if (!cir_rom_load_diff(diffpath)) {
+				fprintf(stderr, "FAIL: Unable to open %s\n", diffpath);
+				diff = 0;
+			}
+			else {
+				// Do the actual diffing
+				cir_ips_diff();
+			}
+		}
+		
+		// If there is an IPS patch file to be written, write it
+		if (patchout) {
+			if (diff) {
+				if (!cir_ips_write(patchoutpath)) {
+					fprintf(stderr, "FAIL: Unable to open %s\n", patchoutpath);
+				}
+			}
+			else {
+				fprintf(stderr, "FAIL: Must compare files to create patch\n");
 			}
 		}
 		
@@ -410,7 +458,9 @@ int main(int argc, char* argv[]) {
 				// Parse (don't apply) the IPS patch to find out stats
 				cir_ips_parse(0);
 				// Write the file if it was specified
-				if (writefile) { cir_ips_rom_write(outfilepath); }
+				if (!cir_rom_write(outfilepath)) {
+					fprintf(stderr, "FAIL: Unable to write %s\n", outfilepath);
+				}
 			}
 		}
 		// Otherwise just write a file if it was specified

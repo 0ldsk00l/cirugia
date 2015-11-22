@@ -41,7 +41,9 @@
 uint8_t *rom = NULL;		// NES ROM file
 uint8_t *romheader = NULL;	// The NES ROM Header
 uint8_t *rom_nh = NULL;		// NES ROM file without header
+uint8_t *diffrom = NULL;	// NES ROM to diff against
 int32_t romsize = 0;		// Size of the ROM with header
+int32_t diffsize = 0;		// Size of the Diff ROM with header
 int32_t nhsize = 0;			// Size of the ROM without header
 
 int cir_rom_load(const char *filepath) {
@@ -67,6 +69,35 @@ int cir_rom_load(const char *filepath) {
 	if (rom == NULL) { return 0; }
 	
 	result = fread(rom, sizeof(uint8_t), filesize, file);
+	if (result != filesize) { return 0; }
+	
+	fclose(file);
+	
+	return 1;
+}
+
+int cir_rom_load_diff(const char *filepath) {
+	// Load a Diff ROM
+	
+	FILE *file;
+	long filesize; // File size in bytes
+	size_t result;
+	
+	file = fopen(filepath, "rb");
+	
+	if (!file) { return 0; }
+	
+	fseek(file, 0, SEEK_END);
+	filesize = ftell(file);
+	fseek(file, 0, SEEK_SET);
+	
+	diffsize = filesize;
+	
+	diffrom = malloc(filesize * sizeof(uint8_t));
+	
+	if (diffrom == NULL) { return 0; }
+	
+	result = fread(diffrom, sizeof(uint8_t), filesize, file);
 	if (result != filesize) { return 0; }
 	
 	fclose(file);
@@ -141,4 +172,5 @@ void cir_rom_cleanup() {
 	free(rom);
 	free(romheader);
 	free(rom_nh);
+	free(diffrom);
 }
