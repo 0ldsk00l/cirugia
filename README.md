@@ -7,6 +7,16 @@
 * Apply IPS patches
 * Create IPS patches by comparing ROMs
 
+#### Compiling
+CLI:
+```
+make
+```
+GTK+:
+```
+make -f Makefile.gtk
+```
+
 #### Examples
 Set ROM's header to version 2, mapper 23, submapper 15:  
 ```

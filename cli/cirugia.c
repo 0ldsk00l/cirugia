@@ -1,5 +1,5 @@
 /*
- * Cirugía - Copyright (C) R. Danbrook 2015
+ * Cirugía - Copyright (C) R. Danbrook 2015-2016
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -66,7 +66,7 @@ int cir_cli_header_parse() {
 	
 	// Check if PRG RAM or battery is present
 	if (cir_header_get_prgram_present()) {
-		fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_header_get_prgram());
+		fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_header_get_prgram() * 8192);
 		//fprintf(stdout, "PRG RAM size in kbytes: %.2f\n", cir_header_get_prgram() / 1024.0);
 		
 		if (version == 2) {
@@ -458,7 +458,7 @@ int main(int argc, char* argv[]) {
 				// Parse (don't apply) the IPS patch to find out stats
 				cir_ips_parse(0);
 				// Write the file if it was specified
-				if (!cir_rom_write(outfilepath)) {
+				if (!cir_ips_rom_write(outfilepath)) {
 					fprintf(stderr, "FAIL: Unable to write %s\n", outfilepath);
 				}
 			}

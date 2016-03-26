@@ -1,5 +1,5 @@
 /*
- * Cirugía - Copyright (C) R. Danbrook 2015
+ * Cirugía - Copyright (C) R. Danbrook 2015-2016
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -114,7 +114,7 @@ int cir_header_get_prgram() {
 		return 0x80 << ((romheader[10] & 0x0f) - 1);
 	}
 	else {
-		return romheader[8] * 8192;
+		return romheader[8];
 	}
 }
 
