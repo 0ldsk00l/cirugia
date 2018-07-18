@@ -33,18 +33,24 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "header.h"
 #include "hash.h"
 #include "ips.h"
 #include "rom.h"
 
 // Global Variables
 uint8_t *rom = NULL;		// NES ROM file
-uint8_t *romheader = NULL;	// The NES ROM Header
+uint8_t *rom_hdr = NULL;	// The NES ROM Header
 uint8_t *rom_nh = NULL;		// NES ROM file without header
+uint8_t *rom_prg = NULL;	// PRG ROM
+uint8_t *rom_chr = NULL;	// CHR ROM
 uint8_t *diffrom = NULL;	// NES ROM to diff against
+
 int32_t romsize = 0;		// Size of the ROM with header
 int32_t diffsize = 0;		// Size of the Diff ROM with header
 int32_t nhsize = 0;			// Size of the ROM without header
+int32_t prgsize = 0;		// Size of PRG ROM
+int32_t chrsize = 0;		// Size of CHR ROM
 
 int cir_rom_load(const char *filepath) {
 	// Load a ROM
@@ -119,7 +125,7 @@ int cir_rom_write(const char *filepath) {
 	// Stitch the pieces together
 	outfile = malloc((nhsize + HEADERSIZE) * sizeof(uint8_t));
 	
-	for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = romheader[i]; }
+	for (int i = 0; i < HEADERSIZE; i++) { outfile[i] = rom_hdr[i]; }
 	for (int j = 0; j < nhsize; j++) { outfile[j + HEADERSIZE] = rom_nh[j]; }
 	
 	// Write the file
@@ -130,6 +136,41 @@ int cir_rom_write(const char *filepath) {
 	
 	// Free the malloc
 	free(outfile);
+	
+	return 1;
+}
+
+int cir_rom_write_split(const char *filebase) {
+	// Write PRG and CHR ROM separately
+	
+	FILE *file;
+	
+	char filepath[256];
+	snprintf(filepath, sizeof(filepath), "%s.prg", filebase);
+	
+	// Open the PRG file for writing
+	file = fopen(filepath, "wb");
+	
+	if (!file) { return 0; }
+	
+	// PRG ROM
+	fwrite(rom_prg, sizeof(uint8_t), prgsize, file);
+	
+	// Close the file
+	fclose(file);
+	
+	if (chrsize > 0) { // Write CHR ROM if there is one
+		snprintf(filepath, sizeof(filepath), "%s.chr", filebase);
+		file = fopen(filepath, "wb");
+		
+		if (!file) { return 0; }
+		
+		// CHR ROM
+		fwrite(rom_chr, sizeof(uint8_t), chrsize, file);
+		
+		// Close the file
+		fclose(file);
+	}
 	
 	return 1;
 }
@@ -155,9 +196,9 @@ void cir_rom_split_header_rom() {
 	// Split the header from the ROM
 	
 	// Copy header to a malloc
-	romheader = malloc(HEADERSIZE * sizeof(uint8_t));
+	rom_hdr = malloc(HEADERSIZE * sizeof(uint8_t));
 	for (int i = 0; i < HEADERSIZE; i++) {
-		romheader[i] = rom[i];
+		rom_hdr[i] = rom[i];
 	}
 	
 	// Copy the ROM data to a malloc
@@ -167,10 +208,31 @@ void cir_rom_split_header_rom() {
 	}
 }
 
+void cir_rom_split_prg_chr_rom() {
+	// Split the PRG and CHR ROMs
+	
+	prgsize = cir_header_get_prgrom() * 16384;
+	chrsize = cir_header_get_chrrom() * 8192;
+	
+	// Copy PRG ROM to a malloc
+	rom_prg = malloc(prgsize * sizeof(uint8_t));
+	for (int i = 0; i < prgsize; i++) {
+		rom_prg[i] = rom_nh[i];
+	}
+	
+	// Copy CHR ROM to a malloc
+	rom_chr = malloc(prgsize * sizeof(uint8_t));
+	for (int i = 0; i < chrsize; i++) {
+		rom_chr[i] = rom_nh[i + prgsize];
+	}
+}
+
 void cir_rom_cleanup() {
 	// Free mallocs
 	free(rom);
-	free(romheader);
+	free(rom_hdr);
 	free(rom_nh);
+	free(rom_prg);
+	free(rom_chr);
 	free(diffrom);
 }
