@@ -211,8 +211,8 @@ void cir_rom_split_header_rom() {
 void cir_rom_split_prg_chr_rom() {
 	// Split the PRG and CHR ROMs
 	
-	prgsize = cir_header_get_prgrom() * 16384;
-	chrsize = cir_header_get_chrrom() * 8192;
+	prgsize = cir_ines_get_prgrom() * 16384;
+	chrsize = cir_ines_get_chrrom() * 8192;
 	
 	// Copy PRG ROM to a malloc
 	rom_prg = malloc(prgsize * sizeof(uint8_t));

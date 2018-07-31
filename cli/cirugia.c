@@ -39,6 +39,50 @@
 #include "ips.h"
 #include "rom.h"
 
+static const char *mfrcodes[256] = {
+	[0x00] = "Unlicensed",
+	[0x01] = "Nintendo",
+	[0x08] = "Capcom",
+	[0x0a] = "Jaleco",
+	[0x18] = "Hudson Soft",
+	[0x49] = "Irem",
+	[0x4a] = "Gakken",
+	[0x8b] = "BulletProof Software (BPS)",
+	[0x99] = "Pack-In-Video",
+	[0x9b] = "Tecmo",
+	[0x9c] = "Imagineer",
+	[0xa2] = "Scorpion Soft",
+	[0xa4] = "Konami",
+	[0xa6] = "Kawada Co., Ltd.",
+	[0xa7] = "Takara",
+	[0xa8] = "Royal Industries",
+	[0xac] = "Toei Animation",
+	[0xaf] = "Namco",
+	[0xb1] = "ASCII Corporation",
+	[0xb2] = "Bandai",
+	[0xb3] = "Soft Pro Inc.",
+	[0xb6] = "HAL Laboratory",
+	[0xbb] = "Sunsoft",
+	[0xbc] = "Toshiba EMI",
+	[0xc0] = "Taito",
+	[0xc1] = "Sunsoft / Ask Co., Ltd.",
+	[0xc2] = "Kemco",
+	[0xc3] = "Square",
+	[0xc4] = "Tokuma Shoten",
+	[0xc5] = "Data East",
+	[0xc6] = "Tonkin House/Tokyo Shoseki",
+	[0xc7] = "East Cube",
+	[0xca] = "Konami/Ultra/Palcom",
+	[0xcb] = "NTVIC/VAP",
+	[0xcc] = "Use Co., Ltd.",
+	[0xce] = "Pony Canyon / FCI",
+	[0xd1] = "Sofel",
+	[0xd2] = "Bothtec, Inc.",
+	[0xdb] = "Hiro Co., Ltd.",
+	[0xe7] = "Athena",
+	[0xeb] = "Atlus",
+};
+
 extern int version;
 
 int cir_cli_header_parse() {
@@ -52,43 +96,43 @@ int cir_cli_header_parse() {
 	}
 	
 	// Get the mapper number
-	int mappernum = cir_header_get_mapper();
+	int mappernum = cir_ines_get_mapper();
 	fprintf(stdout, "Mapper: %d (0x%.2x)\n", mappernum, mappernum);
 	
 	// Get the submapper number (NES 2.0)
 	if (version == 2) {
-		fprintf(stdout, "Submapper: %d (0x%.2x)\n", cir_header_get_submapper(), cir_header_get_submapper());
+		fprintf(stdout, "Submapper: %d (0x%.2x)\n", cir_ines_get_submapper(), cir_ines_get_submapper());
 	}
 	
 	// Get the PRG ROM size
-	fprintf(stdout, "PRG ROM size in bytes: %d\n", cir_header_get_prgrom() * 16384);
-	//fprintf(stdout, "PRG ROM size in kbytes: %d\n", cir_header_get_prgrom() * 16);
+	fprintf(stdout, "PRG ROM size in bytes: %d\n", cir_ines_get_prgrom() * 16384);
+	//fprintf(stdout, "PRG ROM size in kbytes: %d\n", cir_ines_get_prgrom() * 16);
 	
 	// Check if PRG RAM or battery is present
-	if (cir_header_get_prgram_present()) {
-		fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_header_get_prgram() * 8192);
-		//fprintf(stdout, "PRG RAM size in kbytes: %.2f\n", cir_header_get_prgram() / 1024.0);
+	if (cir_ines_get_prgram_present()) {
+		fprintf(stdout, "PRG RAM size in bytes: %d\n", cir_ines_get_prgram() * 8192);
+		//fprintf(stdout, "PRG RAM size in kbytes: %.2f\n", cir_ines_get_prgram() / 1024.0);
 		
 		if (version == 2) {
-			fprintf(stdout, "PRG NVRAM size in bytes: %d\n", cir_header_get_prgnvram());
+			fprintf(stdout, "PRG NVRAM size in bytes: %d\n", cir_ines_get_prgnvram());
 		}
 	}
 	
 	// Check the CHR ROM size or detect CHR RAM
-	if (cir_header_get_chrrom()) {
-		fprintf(stdout, "CHR ROM size in bytes: %d\n", cir_header_get_chrrom() * 8192);
-		//fprintf(stdout, "CHR ROM size in kbytes: %d\n", cir_header_get_chrrom() * 8);
+	if (cir_ines_get_chrrom()) {
+		fprintf(stdout, "CHR ROM size in bytes: %d\n", cir_ines_get_chrrom() * 8192);
+		//fprintf(stdout, "CHR ROM size in kbytes: %d\n", cir_ines_get_chrrom() * 8);
 	}
 	else {
 		if (version == 2) {
-			fprintf(stdout, "CHR RAM size in bytes: %d\n", cir_header_get_chrram());
-			fprintf(stdout, "CHR NVRAM size in bytes: %d\n", cir_header_get_chrnvram());
+			fprintf(stdout, "CHR RAM size in bytes: %d\n", cir_ines_get_chrram());
+			fprintf(stdout, "CHR NVRAM size in bytes: %d\n", cir_ines_get_chrnvram());
 		}
 		else { fprintf(stdout, "CHR RAM: Present\n"); }
 	}
 	
 	// Check the mirroring
-	int mirroring = cir_header_get_mirroring();
+	int mirroring = cir_ines_get_mirroring();
 	
 	if (mirroring == 2) {
 		fprintf(stdout, "Mirroring: Four screen\n");
@@ -101,9 +145,9 @@ int cir_cli_header_parse() {
 	}
 	
 	// Check if there's a trainer
-	fprintf(stdout, "512-byte trainer: %s\n", cir_header_get_trainer() ? "Present" : "None");
+	fprintf(stdout, "512-byte trainer: %s\n", cir_ines_get_trainer() ? "Present" : "None");
 	
-	int system = cir_header_get_system();
+	int system = cir_ines_get_system();
 	if (system == 2) { // PC-10
 		fprintf(stdout, "System: PlayChoice-10\n");
 	}
@@ -113,7 +157,7 @@ int cir_cli_header_parse() {
 		// Detect VS. System hardware if it's NES 2.0
 		if (version == 2) {
 			// Check the VS. System's PPU hardware
-			int vsppu = cir_header_get_vsppu();
+			int vsppu = cir_ines_get_vsppu();
 			
 			if (vsppu == 0) {
 				fprintf(stdout, "VS. System PPU: RP2C03B\n");
@@ -156,7 +200,7 @@ int cir_cli_header_parse() {
 			}
 			
 			// Check the VS. System's PPU Mode
-			int vsmode = cir_header_get_vsmode();
+			int vsmode = cir_ines_get_vsmode();
 			
 			if (vsmode == 0) {
 				fprintf(stdout, "VS. System Mode: Standard\n");
@@ -177,7 +221,7 @@ int cir_cli_header_parse() {
 	}
 	
 	// TV System
-	int tvsystem = cir_header_get_tvsystem();
+	int tvsystem = cir_ines_get_tvsystem();
 	if (tvsystem == 0) {
 		fprintf(stdout, "TV System: NTSC\n");
 	}
@@ -244,9 +288,11 @@ int main(int argc, char* argv[]) {
 	// Split the header and the ROM
 	cir_rom_split_header_rom();
 	
-	if (cir_header_validate()) {
+	int imagetype = cir_header_validate();
+	
+	if (imagetype == 1) { // iNES or NES 2.0
 		// Check header version
-		version = cir_header_get_version();
+		version = cir_ines_get_version();
 		
 		// Get the CRC32 and SHA1 checksums
 		fprintf(stdout, "CRC:  %X\n", cir_rom_get_crc());
@@ -267,7 +313,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'b': // Set the PRG ROM size (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
-						cir_header_set_prgrom(atoi(optarg));
+						cir_ines_set_prgrom(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -b must be 0 to 4095: skipping\n");
@@ -275,7 +321,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'c': // Set the CHR ROM size (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4095) {
-						cir_header_set_chrrom(atoi(optarg));
+						cir_ines_set_chrrom(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -c must be 0 to 4095: skipping\n");
@@ -283,7 +329,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'd': // Set the CHR RAM size (0 - 14)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 15) {
-						cir_header_set_chrram(atoi(optarg));
+						cir_ines_set_chrram(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -d must be 0 to 14: skipping\n");
@@ -291,7 +337,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'e': // Set the CHR NVRAM size (0 - 14)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 15) {
-						cir_header_set_chrnvram(atoi(optarg));
+						cir_ines_set_chrnvram(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -e must be 0 to 14: skipping\n");
@@ -299,7 +345,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'f': // Set the PRG RAM size (0 - 14)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 15) {
-						cir_header_set_prgram(atoi(optarg));
+						cir_ines_set_prgram(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -f must be 0 to 14: skipping\n");
@@ -307,7 +353,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'g': // Set the PRG NVRAM size (0 - 14)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 15) {
-						cir_header_set_prgnvram(atoi(optarg));
+						cir_ines_set_prgnvram(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -g must be 0 to 14: skipping\n");
@@ -315,7 +361,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'i': // Set Mirroring (0 - 2)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 3) {
-						cir_header_set_mirroring(atoi(optarg));
+						cir_ines_set_mirroring(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -i must be 0 to 2: skipping\n");
@@ -323,7 +369,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'j': // Set the PRG RAM present bit (0 - 1)
 					if (atoi(optarg) == 0 && atoi(optarg) == 1) {
-						cir_header_set_prgram_present(atoi(optarg));
+						cir_ines_set_prgram_present(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -j must be 0 to 1: skipping\n");
@@ -331,7 +377,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'k': // Set the VS PPU Chip (0 - 12)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 13) {
-						cir_header_set_vsppu(atoi(optarg));
+						cir_ines_set_vsppu(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -k must be 0 to 12: skipping\n");
@@ -339,7 +385,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'l': // Set the VS PPU Mode (0 - 3)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4) {
-						cir_header_set_vsmode(atoi(optarg));
+						cir_ines_set_vsmode(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -l must be 0 to 3: skipping\n");
@@ -347,7 +393,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'm': // Set the mapper (0 - 4095)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 4096) {
-						cir_header_set_mapper(atoi(optarg));
+						cir_ines_set_mapper(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -m must be 0 to 4096: skipping\n");
@@ -373,7 +419,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'q': // Set System (0 - 2)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 3) {
-						cir_header_set_system(atoi(optarg));
+						cir_ines_set_system(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -i must be 0 to 2: skipping\n");
@@ -381,7 +427,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'r': // Set TV System (0 - 2)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 3) {
-						cir_header_set_tvsystem(atoi(optarg));
+						cir_ines_set_tvsystem(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -i must be 0 to 2: skipping\n");
@@ -389,7 +435,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 's': // Set the mapper (0 - 15)
 					if (atoi(optarg) >= 0 && atoi(optarg) < 16) {
-						cir_header_set_submapper(atoi(optarg));
+						cir_ines_set_submapper(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -s must be 0 to 15: skipping\n");
@@ -397,7 +443,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 't': // Set the trainer bit (0/1)
 					if (atoi(optarg) == 0 || atoi(optarg) == 1) {
-						cir_header_set_trainer(atoi(optarg));
+						cir_ines_set_trainer(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -t must be 0 or 1: skipping\n");
@@ -405,7 +451,7 @@ int main(int argc, char* argv[]) {
 					break;
 				case 'v': // Set header version (1 - 2)
 					if (atoi(optarg) == 1 || atoi(optarg) == 2) {
-						cir_header_set_version(atoi(optarg));
+						cir_ines_set_version(atoi(optarg));
 					}
 					else {
 						fprintf(stderr, "ERROR: -v must be 1 or 2: skipping\n");
@@ -473,7 +519,39 @@ int main(int argc, char* argv[]) {
 		// Spit out the new information
 		cir_cli_header_parse();
 	}
-	else { fprintf(stdout, "FAIL: No Header or Invalid ROM\n"); }
+	else if (imagetype == 2) { // FDS Disk Image
+		fprintf(stdout, "Header Type: FDS Image\n");
+		
+		// Number of disk sides
+		fprintf(stdout, "Disk sides: %d\n", cir_fds_get_disksides());
+		
+		// Disk Verification string
+		if (cir_fds_get_diskverification()) {
+			fprintf(stdout, "Disk Verification: Pass\n");
+		}
+		else {
+			fprintf(stderr, "Disk Verification: Fail\n");
+		}
+		
+		// Manufacturer Code
+		uint8_t mfrcode = cir_fds_get_mfrcode();
+		fprintf(stdout, "Manufacturer: %02X - %s\n", mfrcode, mfrcodes[mfrcode]);
+		
+		// 3-letter Game Name
+		fprintf(stdout, "Game Name: %s\n", cir_fds_get_gamename());
+		
+		// Game Type
+		switch (cir_fds_get_gametype()) {
+			case 0x20: fprintf(stdout, "Game Type: Normal\n"); break;
+			case 0x45: fprintf(stdout, "Game Type: Event\n"); break;
+			case 0x52: fprintf(stdout, "Game Type: Reduction in Price\n"); break;
+			default: fprintf(stderr, "FAIL: Game Type\n");
+		}
+		
+		// Game Revision
+		fprintf(stdout, "Game Revision: %d\n", cir_fds_get_revision());
+	}
+	else { fprintf(stdout, "FAIL: No Header or Invalid Image\n"); }
 	
 	// Exit
 	cir_rom_cleanup();

@@ -92,39 +92,39 @@ int cir_gtk_header_parse() {
 	}
 	
 	// Get the mapper number
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonmapper), cir_header_get_mapper());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonmapper), cir_ines_get_mapper());
 	
 	// Get the submapper number (NES 2.0)
 	if (version == 2) {
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonsubmapper), cir_header_get_submapper());
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonsubmapper), cir_ines_get_submapper());
 	}
 	
 	// Get the PRG ROM size
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgrom), cir_header_get_prgrom());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgrom), cir_ines_get_prgrom());
 	
 	// Check if PRG RAM or battery is present
-	if (cir_header_get_prgram_present()) {
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgram), cir_header_get_prgram());
+	if (cir_ines_get_prgram_present()) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgram), cir_ines_get_prgram());
 		
 		if (version == 2) {
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgnvram), cir_header_get_prgnvram());
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonprgnvram), cir_ines_get_prgnvram());
 		}
 	}
 	
 	// Check the CHR ROM size or detect CHR RAM
-	if (cir_header_get_chrrom()) {
-		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrrom), cir_header_get_chrrom());
+	if (cir_ines_get_chrrom()) {
+		gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrrom), cir_ines_get_chrrom());
 	}
 	else {
 		if (version == 2) {
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrram), cir_header_get_chrram());
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrnvram), cir_header_get_chrnvram());
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrram), cir_ines_get_chrram());
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrnvram), cir_ines_get_chrnvram());
 		}
-		else { gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrram), cir_header_get_chrram()); }
+		else { gtk_spin_button_set_value(GTK_SPIN_BUTTON(spinbuttonchrram), cir_ines_get_chrram()); }
 	}
 	
 	// Check the mirroring
-	int mirroring = cir_header_get_mirroring();
+	int mirroring = cir_ines_get_mirroring();
 	
 	if (mirroring == 2) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radiobuttonf), TRUE);
@@ -137,7 +137,7 @@ int cir_gtk_header_parse() {
 	}
 	
 	// TV System
-	int tvsystem = cir_header_get_tvsystem();
+	int tvsystem = cir_ines_get_tvsystem();
 	if (tvsystem == 0) {
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radiobuttonntsc), TRUE);
 	}
@@ -149,9 +149,9 @@ int cir_gtk_header_parse() {
 	}
 	
 	// Check if there's a trainer
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbuttontrainer), cir_header_get_trainer());
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(checkbuttontrainer), cir_ines_get_trainer());
 	
-	int system = cir_header_get_system();
+	int system = cir_ines_get_system();
 	if (system == 2) { // PC-10
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radiobuttonpc10), TRUE);
 	}
@@ -161,10 +161,10 @@ int cir_gtk_header_parse() {
 		// Detect VS. System hardware if it's NES 2.0
 		if (version == 2) {
 			// Check the VS. System's PPU hardware
-			gtk_combo_box_set_active(GTK_COMBO_BOX(comboboxvsppu), cir_header_get_vsppu());
+			gtk_combo_box_set_active(GTK_COMBO_BOX(comboboxvsppu), cir_ines_get_vsppu());
 			
 			// Check the VS. System's PPU Mode
-			gtk_combo_box_set_active(GTK_COMBO_BOX(comboboxvsmode), cir_header_get_vsmode());
+			gtk_combo_box_set_active(GTK_COMBO_BOX(comboboxvsmode), cir_ines_get_vsmode());
 		}
 	}
 	else { // Home Console
@@ -251,11 +251,11 @@ void cir_gtk_status_update(char *message) {
 }
 
 void cir_gtk_set_vsppu(GtkComboBox *combobox, gpointer data) {
-	cir_header_set_vsppu(gtk_combo_box_get_active(combobox));
+	cir_ines_set_vsppu(gtk_combo_box_get_active(combobox));
 }
 
 void cir_gtk_set_vsmode(GtkComboBox *combobox, gpointer data) {
-	cir_header_set_vsmode(gtk_combo_box_get_active(combobox));
+	cir_ines_set_vsmode(gtk_combo_box_get_active(combobox));
 }
 
 void cir_gtk_toggle_headerver(GtkWidget *radiobutton, gpointer data) {
@@ -266,11 +266,11 @@ void cir_gtk_toggle_headerver(GtkWidget *radiobutton, gpointer data) {
 	}
 	
 	if (!strncmp(label, "iNES", sizeof(label))) {
-		cir_header_set_version(1);
+		cir_ines_set_version(1);
 		version = 1;
 	}
 	if (!strncmp(label, "NES 2.0", sizeof(label))) {
-		cir_header_set_version(2);
+		cir_ines_set_version(2);
 		version = 2;
 	}
 	
@@ -278,35 +278,35 @@ void cir_gtk_toggle_headerver(GtkWidget *radiobutton, gpointer data) {
 }
 
 void cir_gtk_set_mapper(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_mapper((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_mapper((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_submapper(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_submapper((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_submapper((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_prgrom(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_prgrom((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_prgrom((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_prgram(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_prgram((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_prgram((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_prgnvram(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_prgnvram((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_prgnvram((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_chrrom(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_chrrom((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_chrrom((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_chrram(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_chrram((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_chrram((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_set_chrnvram(GtkAdjustment *adjustment, gpointer data) {
-	cir_header_set_chrnvram((int)gtk_adjustment_get_value(adjustment));
+	cir_ines_set_chrnvram((int)gtk_adjustment_get_value(adjustment));
 }
 
 void cir_gtk_toggle_mirroring(GtkWidget *radiobutton, gpointer data) {
@@ -317,13 +317,13 @@ void cir_gtk_toggle_mirroring(GtkWidget *radiobutton, gpointer data) {
 	}
 	
 	if (!strncmp(label, "Horizontal", sizeof(label))) {
-		cir_header_set_mirroring(0);
+		cir_ines_set_mirroring(0);
 	}
 	if (!strncmp(label, "Vertical", sizeof(label))) {
-		cir_header_set_mirroring(1);
+		cir_ines_set_mirroring(1);
 	}
 	if (!strncmp(label, "Four Screen", sizeof(label))) {
-		cir_header_set_mirroring(2);
+		cir_ines_set_mirroring(2);
 	}
 }
 
@@ -335,13 +335,13 @@ void cir_gtk_toggle_system(GtkWidget *radiobutton, gpointer data) {
 	}
 	
 	if (!strncmp(label, "Home Console", sizeof(label))) {
-		cir_header_set_system(0);
+		cir_ines_set_system(0);
 	}
 	if (!strncmp(label, "Vs. System", sizeof(label))) {
-		cir_header_set_system(1);
+		cir_ines_set_system(1);
 	}
 	if (!strncmp(label, "PlayChoice-10", sizeof(label))) {
-		cir_header_set_system(2);
+		cir_ines_set_system(2);
 	}
 	cir_gtk_set_sensitive();
 }
@@ -354,18 +354,18 @@ void cir_gtk_toggle_tvsystem(GtkWidget *radiobutton, gpointer data) {
 	}
 	
 	if (!strncmp(label, "NTSC", sizeof(label))) {
-		cir_header_set_tvsystem(0);
+		cir_ines_set_tvsystem(0);
 	}
 	if (!strncmp(label, "PAL", sizeof(label))) {
-		cir_header_set_tvsystem(1);
+		cir_ines_set_tvsystem(1);
 	}
 	if (!strncmp(label, "NTSC/PAL", sizeof(label))) {
-		cir_header_set_tvsystem(2);
+		cir_ines_set_tvsystem(2);
 	}
 }
 
 void cir_gtk_toggle_trainer(GtkToggleButton *togglebutton, gpointer data) {
-	cir_header_set_trainer(gtk_toggle_button_get_active(togglebutton));
+	cir_ines_set_trainer(gtk_toggle_button_get_active(togglebutton));
 }
 
 void cir_gtk_help_about(GtkWidget *widget, gpointer data) {
@@ -431,7 +431,7 @@ void cir_gtk_file_open() {
 			
 			if (cir_header_validate()) {
 				// Check header version
-				version = cir_header_get_version();
+				version = cir_ines_get_version();
 				cir_gtk_header_parse();
 				char message[128];
 				snprintf(message, sizeof(message), "Loaded: %s", filename);

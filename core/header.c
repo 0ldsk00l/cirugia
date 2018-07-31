@@ -32,6 +32,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <string.h>
 
 // Global Variables
 extern uint8_t *rom_hdr;
@@ -47,10 +48,15 @@ int cir_header_validate() {
 		rom[2] == 0x53 && rom[3] == 0x1a) {
 		return 1;
 	}
+	//0-3: Constant $46 $44 $53 $1A ("FDS" followed by EOF)
+	else if (rom[0] == 0x46 && rom[1] == 0x44 &&
+		rom[2] == 0x53 && rom[3] == 0x1a) {
+		return 2;
+	}
 	else { return 0; }
 }
 
-int cir_header_get_version() {
+int cir_ines_get_version() {
 	// Return the header version
 	
 	if (rom_hdr[7] & 0x08 && !(rom_hdr[7] & 0x04)) {
@@ -59,7 +65,7 @@ int cir_header_get_version() {
 	else { return 1; }
 }
 
-void cir_header_set_version(uint8_t data) {
+void cir_ines_set_version(uint8_t data) {
 	// Set the header version
 	
 	if (data == 1) {
@@ -74,7 +80,7 @@ void cir_header_set_version(uint8_t data) {
 	version = data;
 }
 
-int cir_header_get_prgrom() {
+int cir_ines_get_prgrom() {
 	// Get the PRG ROM size in 16K blocks
 	
 	// NES 2.0
@@ -87,7 +93,7 @@ int cir_header_get_prgrom() {
 	else { return rom_hdr[4]; }
 }
 
-void cir_header_set_prgrom(uint16_t data) {
+void cir_ines_set_prgrom(uint16_t data) {
 	// Set PRG ROM size
 	rom_hdr[4] = 0x00;
 	rom_hdr[4] = data & 0xff;
@@ -97,19 +103,19 @@ void cir_header_set_prgrom(uint16_t data) {
 	}
 }
 
-int cir_header_get_prgram_present() {
+int cir_ines_get_prgram_present() {
 	// Check if PRG RAM exists
 	if (rom_hdr[6] & 0x02) { return 1; }
 	else { return 0; }
 }
 
-void cir_header_set_prgram_present(uint8_t data) {
+void cir_ines_set_prgram_present(uint8_t data) {
 	// Set PRG RAM exists flag
 	rom_hdr[6] &= ~(1 << 1);
 	rom_hdr[6] |= data << 1;
 }
 
-int cir_header_get_prgram() {
+int cir_ines_get_prgram() {
 	// Get PRG RAM size
 	if (version == 2) {
 		return 0x80 << ((rom_hdr[10] & 0x0f) - 1);
@@ -119,7 +125,7 @@ int cir_header_get_prgram() {
 	}
 }
 
-void cir_header_set_prgram(uint8_t data) {
+void cir_ines_set_prgram(uint8_t data) {
 	// Set PRG RAM size
 	if (version == 2) {
 		rom_hdr[10] &= ~0x0f;
@@ -131,40 +137,40 @@ void cir_header_set_prgram(uint8_t data) {
 	}
 }
 
-int cir_header_get_prgnvram() {
+int cir_ines_get_prgnvram() {
 	// Get PRG NVRAM size
 	return 0x80 << (((rom_hdr[10] & 0xf0) >> 4) - 1);
 }
 
-void cir_header_set_prgnvram(uint8_t data) {
+void cir_ines_set_prgnvram(uint8_t data) {
 	// Set PRG NVRAM size
 	rom_hdr[10] &= ~0xf0;
 	rom_hdr[10] |= data << 4;
 }
 
-int cir_header_get_chrram() {
+int cir_ines_get_chrram() {
 	// Get CHR RAM size
 	return 0x80 << ((rom_hdr[11] & 0x0f) - 1);
 }
 
-void cir_header_set_chrram(uint8_t data) {
+void cir_ines_set_chrram(uint8_t data) {
 	// Set CHR RAM size
 	rom_hdr[11] &= ~0x0f;
 	rom_hdr[11] |= data;
 }
 
-int cir_header_get_chrnvram() {
+int cir_ines_get_chrnvram() {
 	// Get CHR NVRAM size
 	return 0x80 << (((rom_hdr[11] & 0xf0) >> 4) - 1);
 }
 
-void cir_header_set_chrnvram(uint8_t data) {
+void cir_ines_set_chrnvram(uint8_t data) {
 	// Set CHR NVRAM size
 	rom_hdr[11] &= ~0xf0;
 	rom_hdr[11] |= data << 4;
 }
 
-int cir_header_get_chrrom() {
+int cir_ines_get_chrrom() {
 	// Get CHR ROM size if there is CHR ROM
 	
 	if (version == 2) {
@@ -180,7 +186,7 @@ int cir_header_get_chrrom() {
 	}
 }
 
-void cir_header_set_chrrom(uint16_t data) {
+void cir_ines_set_chrrom(uint16_t data) {
 	// Set CHR ROM size
 	rom_hdr[5] = 0x00;
 	rom_hdr[5] = data & 0xff;
@@ -190,7 +196,7 @@ void cir_header_set_chrrom(uint16_t data) {
 	}
 }
 
-int cir_header_get_mapper() {
+int cir_ines_get_mapper() {
 	// Get the Mapper number
 	if (version == 2) {
 		return (((rom_hdr[6]) >> 4) & 0x0f) | ((((rom_hdr[7]) >> 4) & 0x0f) << 4) | ((rom_hdr[8] & 0x0f) << 8);
@@ -200,7 +206,7 @@ int cir_header_get_mapper() {
 	}
 }
 
-void cir_header_set_mapper(uint16_t data) {
+void cir_ines_set_mapper(uint16_t data) {
 	// Set the Mapper number (0 - 4095)
 	
 	if (version == 2) {
@@ -215,20 +221,20 @@ void cir_header_set_mapper(uint16_t data) {
 	rom_hdr[6] |= (data & 0x000f) << 4;
 }
 
-int cir_header_get_submapper() {
+int cir_ines_get_submapper() {
 	// Read the NES 2.0 Submapper number
 	int value = rom_hdr[8] >> 4;
 	return value;
 }
 
-void cir_header_set_submapper(uint8_t data) {
+void cir_ines_set_submapper(uint8_t data) {
 	// Set the NES 2.0 Submapper number (0 - 15)
 	
 	rom_hdr[8] &= ~0xf0;
 	rom_hdr[8] |= data << 4;
 }
 
-int cir_header_get_mirroring() {
+int cir_ines_get_mirroring() {
 	// Get mirroring
 	
 	if (rom_hdr[6] & 0x08) { // Four screen mode
@@ -242,7 +248,7 @@ int cir_header_get_mirroring() {
 	}
 }
 
-void cir_header_set_mirroring(uint8_t data) {
+void cir_ines_set_mirroring(uint8_t data) {
 	// Set mirroring
 	
 	if (data == 0) { // Horizontal
@@ -259,13 +265,13 @@ void cir_header_set_mirroring(uint8_t data) {
 	}
 }
 
-int cir_header_get_trainer() {
+int cir_ines_get_trainer() {
 	// Check if there is a 512-byte trainer
 	
 	return rom_hdr[6] & 0x04 ? 1 : 0;
 }
 
-void cir_header_set_trainer(uint8_t data) {
+void cir_ines_set_trainer(uint8_t data) {
 	// Set the 512-byte trainer bit
 	
 	if (data == 0) {
@@ -276,14 +282,14 @@ void cir_header_set_trainer(uint8_t data) {
 	}
 }
 
-int cir_header_get_system() {
+int cir_ines_get_system() {
 	// Get the hardware version/system
 	if (rom_hdr[7] & 0x02) { return 2; } // PlayChoice-10
 	else if (rom_hdr[7] & 0x01) { return 1; } // VS. Unisystem
 	else { return 0; } // Home Console
 }
 
-void cir_header_set_system(uint8_t data) {
+void cir_ines_set_system(uint8_t data) {
 	// Set the hardware version/system
 	
 	if (data == 0) { // Home System
@@ -300,7 +306,7 @@ void cir_header_set_system(uint8_t data) {
 	}
 }
 
-int cir_header_get_tvsystem() {
+int cir_ines_get_tvsystem() {
 	// Get the TV System
 	
 	if (version == 2) { // NES 2.0
@@ -320,7 +326,7 @@ int cir_header_get_tvsystem() {
 	}
 }
 
-void cir_header_set_tvsystem(uint8_t data) {
+void cir_ines_set_tvsystem(uint8_t data) {
 	// Set the TV System
 	// Remember to deal with version here
 	if (data == 0) { // NTSC
@@ -335,24 +341,56 @@ void cir_header_set_tvsystem(uint8_t data) {
 	}
 }
 
-int cir_header_get_vsppu() {
+int cir_ines_get_vsppu() {
 	// Get VS. System PPU Hardware
 	return rom_hdr[13] & 0x0f;
 }
 
-void cir_header_set_vsppu(uint8_t data) {
+void cir_ines_set_vsppu(uint8_t data) {
 	// Set VS. System PPU Hardware (0 - 12)
 	rom_hdr[13] &= ~0x0f;
 	rom_hdr[13] |= (data & 0x0f);
 }
 
-int cir_header_get_vsmode() {
+int cir_ines_get_vsmode() {
 	// Get VS. System PPU Mode
 	return (rom_hdr[13] >> 4) & 0x0f;
 }
 
-void cir_header_set_vsmode(uint8_t data) {
+void cir_ines_set_vsmode(uint8_t data) {
 	// Set VS. System PPU Mode (0-3)
 	rom_hdr[13] &= ~0xf0;
 	rom_hdr[13] |= (data & 0x0f) << 4;
+}
+
+// FDS
+
+uint8_t cir_fds_get_disksides() {
+	return rom_hdr[4];
+}
+
+uint8_t cir_fds_get_diskverification() {
+	if (memcmp(&rom[17], "*NINTENDO-HVC*", 14)) {
+		return 0;
+	}
+	else { return 1; }
+}
+
+uint8_t cir_fds_get_mfrcode() {
+	return rom[31];
+}
+
+char *cir_fds_get_gamename() {
+	static char gamename[4];
+	gamename[0] = rom[32]; gamename[1] = rom[33];
+	gamename[2] = rom[34]; gamename[3] = '\0';
+	return gamename;
+}
+
+uint8_t cir_fds_get_gametype() {
+	return rom[35];
+}
+
+uint8_t cir_fds_get_revision() {
+	return rom[36];
 }
