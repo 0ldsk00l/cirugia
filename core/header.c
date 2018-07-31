@@ -1,5 +1,5 @@
 /*
- * Cirugía - Copyright (C) R. Danbrook 2015-2016
+ * Cirugía - Copyright (C) R. Danbrook 2015-2018
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -393,4 +393,44 @@ uint8_t cir_fds_get_gametype() {
 
 uint8_t cir_fds_get_revision() {
 	return rom[36];
+}
+
+uint8_t cir_fds_get_sidenum() {
+	return rom[37];
+}
+
+uint8_t cir_fds_get_disknum() {
+	return rom[38];
+}
+
+uint8_t cir_fds_get_disktype() {
+	return rom[39];
+}
+
+uint8_t cir_fds_get_bootreadfile() {
+	return rom[41];
+}
+
+void cir_fds_get_mfrdate(char *mfrdate) {
+	mfrdate[0] = rom[47];
+	mfrdate[1] = rom[48];
+	mfrdate[2] = rom[49];
+}
+
+void cir_fds_get_rwdate(char *rwdate) {
+	rwdate[0] = rom[60];
+	rwdate[1] = rom[61];
+	rwdate[2] = rom[62];
+}
+
+uint8_t cir_fds_get_rwcount() {
+	return rom[68];
+}
+
+uint8_t cir_fds_get_sidenum_actual() {
+	return rom[70];
+}
+
+uint8_t cir_fds_get_price() {
+	return rom[72];
 }

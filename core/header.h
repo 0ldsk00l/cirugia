@@ -43,5 +43,14 @@ uint8_t cir_fds_get_mfrcode();
 char *cir_fds_get_gamename();
 uint8_t cir_fds_get_gametype();
 uint8_t cir_fds_get_revision();
+uint8_t cir_fds_get_sidenum();
+uint8_t cir_fds_get_disknum();
+uint8_t cir_fds_get_disktype();
+uint8_t cir_fds_get_bootreadfile();
+void cir_fds_get_mfrdate(char *mfrdate);
+void cir_fds_get_rwdate(char *rwdate);
+uint8_t cir_fds_get_rwcount();
+uint8_t cir_fds_get_sidenum_actual();
+uint8_t cir_fds_get_price();
 
 #endif

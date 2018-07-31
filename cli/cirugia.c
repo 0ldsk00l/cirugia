@@ -1,5 +1,5 @@
 /*
- * Cirugía - Copyright (C) R. Danbrook 2015-2016
+ * Cirugía - Copyright (C) R. Danbrook 2015-2018
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are
@@ -550,6 +550,34 @@ int main(int argc, char* argv[]) {
 		
 		// Game Revision
 		fprintf(stdout, "Game Revision: %d\n", cir_fds_get_revision());
+		
+		// Side Number
+		fprintf(stdout, "Disk Number: %d, Side %s\n", cir_fds_get_disknum() + 1, cir_fds_get_sidenum() == 0x00 ? "A" : "B");
+		
+		// Disk Type
+		fprintf(stdout, "Disk Type: %s\n", cir_fds_get_disktype() == 0x00 ? "FMC" : "FSC");
+		
+		// Boot Read File Code
+		fprintf(stdout, "Boot Read File Code: 0x%02X\n", cir_fds_get_bootreadfile());
+		
+		// Manufacture Date - BCD Date Format is nonsense
+		char mfrdate[3] = {0};
+		cir_fds_get_mfrdate(&mfrdate[0]);		
+		if (mfrdate[0] != 0) { fprintf(stdout, "Manufacture Date: %d-%02x-%02x\n", (((mfrdate[0] >> 4) * 10) + (mfrdate[0] & 0xf)) + 1925, mfrdate[1], mfrdate[2]); }
+		
+		// Rewritten Date - BCD Date Format again...
+		char rwdate[3] = {0};
+		cir_fds_get_rwdate(&rwdate[0]);
+		if (rwdate[0] != 0) { fprintf(stdout, "Rewritten Date: %d-%02x-%02x\n", (((rwdate[0] >> 4) * 10) + (rwdate[0] & 0xf)) + 1925, rwdate[1], rwdate[2]); }
+		
+		// Rewrite Count
+		fprintf(stdout, "Rewrite Count: %X\n", cir_fds_get_rwcount());
+		
+		// Actual Side Number
+		fprintf(stdout, "Actual Disk Side: %s\n", cir_fds_get_sidenum_actual() == 0x00 ? "A" : "B");
+		
+		// Price
+		fprintf(stdout, "Price Code: 0x%02X\n", cir_fds_get_price());
 	}
 	else { fprintf(stdout, "FAIL: No Header or Invalid Image\n"); }
 	
