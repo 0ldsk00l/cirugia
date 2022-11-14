@@ -1,0 +1,1331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>580</width>
+    <height>900</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Cirugía</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QGroupBox" name="groupBoxHeader">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>10</y>
+      <width>201</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Header Version</string>
+    </property>
+    <widget class="QRadioButton" name="radioButtonINES">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>iNES</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonNES2">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>40</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>NES 2.0</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxMapper">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>10</y>
+      <width>201</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Mapper</string>
+    </property>
+    <widget class="QSpinBox" name="spinMapper">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>61</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string extracomment="0 - 4095 for NES 2.0, 0 - 255 for iNES"/>
+     </property>
+     <property name="maximum">
+      <number>4095</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelMapper">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>57</width>
+       <height>14</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Mapper</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelSubmapper">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>30</y>
+       <width>81</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Submapper</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinSubmapper">
+     <property name="geometry">
+      <rect>
+       <x>110</x>
+       <y>50</y>
+       <width>61</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string extracomment="0 - 15"/>
+     </property>
+     <property name="maximum">
+      <number>15</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxPRG">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>100</y>
+      <width>561</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>PRG Sizes</string>
+    </property>
+    <widget class="QLabel" name="labelPRGROM">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PRG ROM 16K Blocks</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelPRGRAM">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>30</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PRG RAM 8K Shift Count</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelPRGNVRAM">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>30</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PRG NVRAM 8K Shift Count</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinPRGROM">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>4095</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinPRGRAM">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>14</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinPRGNVRAM">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>14</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxCHR">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>190</y>
+      <width>561</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>CHR Sizes</string>
+    </property>
+    <widget class="QLabel" name="labelCHRROM">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CHR ROM 8K Blocks</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelCHRRAM">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>30</y>
+       <width>151</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CHR RAM 8K Shift Count</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="labelCHRNVRAM">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>30</y>
+       <width>171</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>CHR NVRAM 8K Shift Count</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinCHRROM">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>4095</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinCHRRAM">
+     <property name="geometry">
+      <rect>
+       <x>200</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>14</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinCHRNVRAM">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>50</y>
+       <width>71</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>14</number>
+     </property>
+     <property name="singleStep">
+      <number>1</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxMirroring">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>280</y>
+      <width>561</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Mirroring</string>
+    </property>
+    <widget class="QRadioButton" name="radioButtonH">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Horizontal</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonV">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Vertical</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButton4">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Four Screen</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxSystem">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>370</y>
+      <width>561</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>System</string>
+    </property>
+    <widget class="QRadioButton" name="radioButtonConsole">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>121</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Home Console</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonVS">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>40</y>
+       <width>111</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Vs. System</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonPC10">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>40</y>
+       <width>121</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PlayChoice-10</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonExtsys">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>40</y>
+       <width>111</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Extended</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxTiming">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>460</y>
+      <width>561</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>CPU/PPU Timing</string>
+    </property>
+    <widget class="QRadioButton" name="radioButtonNTSC">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>NTSC</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonPAL">
+     <property name="geometry">
+      <rect>
+       <x>160</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PAL</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonMulti">
+     <property name="geometry">
+      <rect>
+       <x>300</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Multi-region</string>
+     </property>
+    </widget>
+    <widget class="QRadioButton" name="radioButtonDendy">
+     <property name="geometry">
+      <rect>
+       <x>440</x>
+       <y>40</y>
+       <width>99</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Dendy</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxVSSystem">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>550</y>
+      <width>311</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Vs. System</string>
+    </property>
+    <widget class="QLabel" name="labelVSPPU">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>57</width>
+       <height>14</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>PPU</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxVSPPU">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>131</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>RP2C03B</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RP2C03G</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RP2C04-0001</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RP2C04-0002</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RP2C04-0003</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RP2C04-0004</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C03B</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C03C</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C05-01</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C05-02</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C05-03</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C05-04</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RC2C05-05</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QLabel" name="labelVSHardware">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>30</y>
+       <width>61</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Hardware</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxVSHardware">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>50</y>
+       <width>131</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Normal</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RBI Baseball</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TKO Boxing</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Super Xevious</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vs. Ice Climber</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dual System</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Raid on Bungeling Bay</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxFlags">
+    <property name="geometry">
+     <rect>
+      <x>450</x>
+      <y>10</y>
+      <width>120</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Flags</string>
+    </property>
+    <widget class="QCheckBox" name="checkTrainer">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>50</y>
+       <width>85</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Trainer</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="checkBattery">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>30</y>
+       <width>85</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Battery</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxExtsys">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>550</y>
+      <width>231</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Extended System</string>
+    </property>
+    <widget class="QLabel" name="labelExtsysType">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>57</width>
+       <height>14</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Type</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxExtsys">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>211</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Home Console</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vs. System</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>PlayChoice-10</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Famiclone with Decimal Mode</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Home Console with EPSM or plug-through cartridge</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT01 with red/cyan STN palette</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT02</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT03</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT09</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT32</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>VT369</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>UMC UM6578</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Famicom Network System</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>640</y>
+      <width>311</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Default Expansion Device</string>
+    </property>
+    <widget class="QLabel" name="labelExpdev">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>57</width>
+       <height>14</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Device</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="comboBoxExpdev">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>291</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>Unspecified</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Standard NES/Famicom controllers</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>NES Four Score/Satellite</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Famicom Four Player Adapter</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vs. System (1P via $4016)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vs. System (1P via $4017)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Reserved</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Vs. Zapper</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Zapper ($4017)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Two Zappers</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Bandai Hyper Shot Lightgun</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Power Pad Side A</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Power Pad Side B</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Family Trainer Side A</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Family Trainer Side B</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Arkanoid Vaus Controller (NES)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Arkanoid Vaus Controller (Famicom)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Two Vaus Controllers plus Famicom Data Recorder</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Konami Hyper Shot Controller</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Coconuts Pachinko Controller</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Exciting Boxing Punching Bag (Blowup Doll)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Jissen Mahjong Controller</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Party Tap</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Oeka Kids Tablet</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Sunsoft Barcode Battler</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Miracle Piano Keyboard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Pokkun Moguraa</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Top Rider</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Double-Fisted</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Famicom 3D System</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Doremikko Keyboard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R.O.B. Gyro Set</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Famicom Data Recorder (don't emulate keyboard)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ASCII Turbo File</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>IGS Storage Battle Box</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Family BASIC Keyboard plus Famicom Data Recorder</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Dongda PEC-586 Keyboard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Bit Corp. Bit-79 Keyboard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Subor Keyboard</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Subor Keyboard plus mouse (3x8-bit protocol)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Subor Keyboard plus mouse (24-bit protocol)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SNES Mouse ($4017.d0)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Multicart</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Two SNES controllers</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>RacerMate Bicycle</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>U-Force</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>R.O.B. Stack-Up</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>City Patrolman Lightgun</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Sharp C1 Cassette Interface</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Standard Controller with swapped Left-Right/Up-Down/B-A</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Excalibor Sudoku Pad</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>ABL Pinball</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Golden Nugget Casino extra buttons</string>
+      </property>
+     </item>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBoxMiscROMs">
+    <property name="geometry">
+     <rect>
+      <x>340</x>
+      <y>640</y>
+      <width>231</width>
+      <height>80</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Miscellaneous ROMs</string>
+    </property>
+    <widget class="QLabel" name="labelMiscROMs">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>131</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Misc. ROMs Present</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spinMiscROMs">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>51</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>3</number>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QLineEdit" name="lineEditSHA1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>760</y>
+      <width>331</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelSHA1">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>740</y>
+      <width>57</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>SHA1:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCRCCHR">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>800</y>
+      <width>57</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CHR CRC</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditCRCCHR">
+    <property name="geometry">
+     <rect>
+      <x>290</x>
+      <y>820</y>
+      <width>113</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCRC">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>800</y>
+      <width>57</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>CRC</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditCRC">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>820</y>
+      <width>113</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="labelCRCPRG">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>800</y>
+      <width>57</width>
+      <height>14</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>PRG CRC</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEditCRCPRG">
+    <property name="geometry">
+     <rect>
+      <x>150</x>
+      <y>820</y>
+      <width>113</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>580</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionQuit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="text">
+    <string>Save As...</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
