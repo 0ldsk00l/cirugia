@@ -10,6 +10,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->actionSave->setDisabled(true);
+    ui->actionSave_As->setDisabled(true);
     ui->radioButtonINES->setDisabled(true);
     ui->radioButtonNES2->setDisabled(true);
     ui->spinMapper->setDisabled(true);
@@ -64,6 +66,8 @@ void MainWindow::open(std::string filename) {
 
 
 void MainWindow::activate_fields() {
+    ui->actionSave->setEnabled(true);
+    ui->actionSave_As->setEnabled(true);
     ui->radioButtonINES->setEnabled(true);
     ui->radioButtonNES2->setEnabled(true);
     ui->spinMapper->setEnabled(true);
