@@ -57,6 +57,7 @@ void MainWindow::open(std::string filename) {
 
     if (!rom->load()) {
         delete rom;
+        return;
     }
 
     deactivate_fields();
